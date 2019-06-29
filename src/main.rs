@@ -1,12 +1,25 @@
-use std::fs;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 
 use clap::{App, Arg, crate_version};
 
 fn main() {
     let matches = build_app().get_matches();
-    let file = matches.value_of("file").unwrap();
-    let contents = fs::read_to_string(file).expect("Unable to read file");
-    println!("File contents: \n\n{}", contents);
+    let file_arg = matches.value_of("file").unwrap();
+    let file = File::open(&file_arg).unwrap();
+    for line in BufReader::new(file).lines() {
+        let encoded = handle_line(line.unwrap()).unwrap();
+        println!("{}", encoded);
+    }
+}
+
+
+fn handle_line(line: String) -> Result<String,()> {
+    let mut output = String::new();
+    for char in line.chars() {
+        output.push(char);
+    }
+    Ok(output)
 }
 
 

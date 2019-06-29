@@ -6,11 +6,16 @@ use clap::{App, Arg, crate_version};
 fn main() {
     let matches = build_app().get_matches();
     let file_arg = matches.value_of("file").unwrap();
-    let file = File::open(&file_arg).unwrap();
+    let file = open_file(&file_arg).unwrap();
     for line in BufReader::new(file).lines() {
         let encoded = handle_line(line.unwrap()).unwrap();
         println!("{}", encoded);
     }
+}
+
+fn open_file(path: &str) -> Result<File, std::io::Error> {
+    let file = File::open(path)?;
+    Ok(file)
 }
 
 
@@ -42,4 +47,41 @@ fn build_app() -> App<'static, 'static> {
                 .help("Value to shift")
                 .required(true),
         ])
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    fn run(filename: String, _0: i8) -> String {
+        let mut output = String::new();
+        let file = open_file(&filename).unwrap();
+        for line in BufReader::new(file).lines() {
+            let encoded = handle_line(line.unwrap()).unwrap();
+            output.push_str(&encoded);
+            output.push_str("\n");
+        }
+        output
+    }
+
+    fn original_text(filename: &String) -> String {
+        fs::read_to_string(filename).expect("Unable to read contents")
+    }
+
+    #[test]
+    fn test_unchanged_single() {
+        let test_file = "tests/simple_test.txt".to_string();
+        let expected = original_text(&test_file);
+        let outputted = run(test_file, 0);
+        assert_eq!(expected, outputted);
+    }
+
+    #[test]
+    fn test_unchanged_multiple() {
+        let test_file = "tests/simple_multilined.txt".to_string();
+        let expected = original_text(&test_file);
+        let outputted = run(test_file, 0);
+        assert_eq!(expected, outputted);
+    }
 }

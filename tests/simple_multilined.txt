@@ -1,0 +1,4 @@
+This is a simple
+multilined test
+that does not contain any special characters
+Thinking about it special characters should be ignored

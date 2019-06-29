@@ -1,0 +1,8 @@
+[package]
+name = "caesar-rust"
+version = "0.1.0"
+authors = ["wylaris <pcs7709@g.rit.edu>"]
+edition = "2018"
+
+[dependencies]
+clap = "~2.33"

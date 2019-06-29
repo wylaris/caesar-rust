@@ -3,6 +3,7 @@ use std::io::{BufRead, BufReader};
 
 use clap::{App, Arg, crate_version};
 
+/// Main function that creates the app and runs the program
 fn main() {
     let matches = build_app().get_matches();
     let file_arg = matches.value_of("file").unwrap();
@@ -13,12 +14,15 @@ fn main() {
     }
 }
 
+
+/// Attempts to open a file
 fn open_file(path: &str) -> Result<File, std::io::Error> {
     let file = File::open(path)?;
     Ok(file)
 }
 
 
+/// Takes a single line from a file an performs the shift
 fn handle_line(line: String) -> Result<String,()> {
     let mut output = String::new();
     for char in line.chars() {
@@ -28,6 +32,7 @@ fn handle_line(line: String) -> Result<String,()> {
 }
 
 
+/// Creates the app and returns the values from the command line
 fn build_app() -> App<'static, 'static> {
     App::new("Julis Caesar Cipher - Rust")
         .version(crate_version!())
@@ -50,10 +55,16 @@ fn build_app() -> App<'static, 'static> {
 }
 
 #[cfg(test)]
+/// Test suite
 mod tests {
     use super::*;
     use std::fs;
 
+
+    /// Simulates the work done by the main function
+    ///
+    /// Instead of printing the results they are returned as
+    /// a built up string: output
     fn run(filename: String, _0: i8) -> String {
         let mut output = String::new();
         let file = open_file(&filename).unwrap();
@@ -65,11 +76,17 @@ mod tests {
         output
     }
 
+
+    /// Gets the original text from a file and returns it
+    ///
+    /// Used to test when a shift of 0 is used
     fn original_text(filename: &String) -> String {
         fs::read_to_string(filename).expect("Unable to read contents")
     }
 
+
     #[test]
+    /// Tests a single lined file with a shift of 0
     fn test_unchanged_single() {
         let test_file = "tests/simple_test.txt".to_string();
         let expected = original_text(&test_file);
@@ -78,6 +95,7 @@ mod tests {
     }
 
     #[test]
+    /// Tests a multilined file with a shift of 0
     fn test_unchanged_multiple() {
         let test_file = "tests/simple_multilined.txt".to_string();
         let expected = original_text(&test_file);
